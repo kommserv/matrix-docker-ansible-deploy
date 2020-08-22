@@ -1,0 +1,9 @@
+---
+
+# it seems this playbook is doing everything as root by default
+# simply using ansible_env.USER did not change that fact
+# so I am using local_user here to run these tasks for our own user on the remote
+- import_tasks: customisation.yml
+  become: true
+  become_user: "{{ local_user }}"
+  tags: setup-all

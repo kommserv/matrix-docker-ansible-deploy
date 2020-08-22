@@ -1,3 +1,6 @@
+# Integration managers sit between your users and your integrations (bots, bridges, etc). 
+# It helps guide users through the configuration of your integrations for their rooms.
+# See: https://github.com/turt2live/matrix-dimension
 matrix_dimension_enabled: false
 
 # You are required to specify an access token for Dimension to work.

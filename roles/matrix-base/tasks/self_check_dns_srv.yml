@@ -52,6 +52,7 @@
 # We expect an answer like this:
 # ;; ANSWER SECTION:
 # _matrix._tcp.DOMAIN. 10800	IN	SRV	10 0 8448 matrix.DOMAIN.
+# ignore errors for this task, since I'm not using SRV records for _matrix._tcp (only for _matrix-identity._tcp)
 - name: Fail if DNS SRV record missing or incorrect (dig CLI tool)
   fail:
     msg: >-
@@ -60,6 +61,7 @@
       See the 'Configuring DNS' documentation for this playbook.
       Full response from the `dig` lookup was: {{ result_cli_dig_srv }}
   when: "lookup_dig_srv is not defined and (dns_srv_record_check.expected_port|string + ' ' + dns_srv_record_check.expected_target) not in result_cli_dig_srv.stdout"
+  ignore_errors: true
 
 - name: Report correct DNS SRV record
   debug:

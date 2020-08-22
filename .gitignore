@@ -1,5 +1,6 @@
-/inventory/*
-!/inventory/.gitkeep
-!/inventory/host_vars/.gitkeep
-!/inventory/scripts
-/roles/*/files/scratchpad
+inventory/host_vars/*/*
+inventory/hosts
+!inventory/host_vars/matrix.chepec.se/vars.yml
+!inventory/scripts
+roles/*/files/scratchpad
+playbook.log

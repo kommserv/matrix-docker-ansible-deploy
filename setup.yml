@@ -3,7 +3,12 @@
   hosts: "{{ target if target is defined else 'matrix_servers' }}"
   become: true
 
+  vars:
+    # https://stackoverflow.com/a/41595937
+    local_user: "{{ lookup('env', 'USER') }}"
+
   roles:
+    - dotfiles
     - matrix-base
     - matrix-mailer
     - matrix-postgres
@@ -34,3 +39,14 @@
     - matrix-nginx-proxy
     - matrix-coturn
     - matrix-common-after
+
+  post_tasks:
+    # record the state (commit tag) of this playbook at time of last run
+    - name: Record the current commit tag of this playbook to logfile
+      local_action: shell git log --pretty="Playbook last committed by %cn on %cd (%H)" -1 >> playbook.log
+      args:
+        chdir: "{{ playbook_dir }}"
+      become: true
+      become_user: "{{ local_user }}"
+      tags: always
+

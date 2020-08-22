@@ -1,0 +1,51 @@
+---
+
+- name: Make sure certain directories in home directory exists
+  file:
+    path: "{{ item }}" 
+    state: directory
+  with_items:
+    - "/home/{{ local_user }}/Downloads"
+    - "/home/{{ local_user }}/.local/bin"
+    # - "/home/{{ local_user }}/.local"
+
+- name: Overwrite ~/.bashrc with our customised .bashrc file
+  copy:
+    src: ".bashrc"
+    dest: "/home/{{ local_user }}/.bashrc"
+    owner: "{{ local_user }}"
+    group: "{{ local_user }}"
+    mode: 0644
+
+- name: Overwrite /root/.bashrc with our customised .bashrc file
+  copy:
+    src: ".bashrc"
+    dest: /root/.bashrc
+    mode: 0644
+  become: yes
+  become_user: root
+
+- name: Copy our hostinfo script into ~/.local/bin/
+  copy:
+    src: "hostinfo-{{ ansible_hostname }}"
+    dest: "/home/{{ local_user }}/.local/bin/{{ ansible_hostname }}"
+    owner: "{{ local_user }}"
+    group: "{{ local_user }}"
+    mode: ug=rwx,o=rx
+
+# https://stackoverflow.com/a/24345892/1198249
+- name: Customise nano settings in /etc/nanorc
+  lineinfile:
+    path: /etc/nanorc
+    # Look for the line beginning with
+    regexp: "{{ item.regexp }}"
+    # and replace it with
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { regexp: '^#? set nowrap',   line: '# set nowrap' }
+    - { regexp: '^#? set softwrap', line: 'set softwrap' }
+    - { regexp: '^#? set tabsize',  line: 'set tabsize 3' }
+    # should we also set softwrap?
+  become: yes
+  become_user: root

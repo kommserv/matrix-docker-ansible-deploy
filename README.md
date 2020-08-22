@@ -108,6 +108,32 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 ## Installation
 
+To set up your VPS, use this cloud-init config:
+```
+#cloud-config
+users:
+   - name: taha
+     gecos: TA
+     ssh_authorized_keys:
+     - {{ matrix_host.pubkey }}
+     lock_passwd: true
+     sudo: ['ALL=(ALL) NOPASSWD:ALL']
+     groups: sudo
+     shell: /bin/bash
+runcmd:
+   - dd if=/dev/zero of=/swap bs=1M count=1024
+   - mkswap /swap
+   - chmod 600 /swap
+   - echo "/swap swap swap defaults 0 0" >> /etc/fstab
+```
+
+On first login to the VPS,
+
++ activate the swap file `sudo swapon -a`
++ set the user's account password `sudo passwd taha`
++ change to root `sudo su` and set root's passwd `passwd`
++ if you want `sudo` to require your password, delete or edit the file `/etc/sudoers.d/90-cloud-init-users`
+
 To configure and install Matrix on your own server, follow the [README in the docs/ directory](docs/README.md).
 
 
@@ -116,6 +142,15 @@ To configure and install Matrix on your own server, follow the [README in the do
 This playbook evolves over time, sometimes with backward-incompatible changes.
 
 When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up with what's new.
+
+
+## Signal bridge?
+
+There's [witchent/matrix-puppet-signal](https://github.com/witchent/matrix-puppet-signal), but it's not dockerised.
+Also, it appears it only supports a single user.
+
+https://github.com/witchent/matrix-puppet-signal
+https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/253
 
 
 ## Docker images used by this playbook
